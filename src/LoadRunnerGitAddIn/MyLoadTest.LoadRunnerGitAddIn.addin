@@ -49,11 +49,31 @@
         <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
     </Path>
 
+    <Path name="/Vugen/Framework/ProjectSystem/VugenProjectNode">
+        <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
+    </Path>
+
     <Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
         <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
     </Path>
 
+    <Path name="/Vugen/Framework/ProjectSystem/VuGenActionGroupTreeNode">
+        <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
+    </Path>
+
+    <Path name="/Vugen/Framework/ProjectSystem/VuGenExtraFilesTreeNode">
+        <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
+    </Path>
+    
     <Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
+        <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
+    </Path>
+
+    <Path name="/Vugen/Framework/ProjectSystem/VuGenActionTreeNode">
+        <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
+    </Path>
+
+    <Path name="/Vugen/Framework/ProjectSystem/VuGenExtraFileTreeNode">
         <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
     </Path>
 </AddIn>
