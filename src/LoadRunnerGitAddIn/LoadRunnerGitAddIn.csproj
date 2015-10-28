@@ -35,14 +35,36 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.Core">
-      <HintPath>..\..\lib\ICSharpCode.Core.dll</HintPath>
+    <Reference Include="HP.LR.VuGen.ProjectSystem">
+      <HintPath>..\..\lib\VuGen\HP.LR.VuGen.ProjectSystem.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.Core.WinForms">
-      <HintPath>..\..\lib\ICSharpCode.Core.WinForms.dll</HintPath>
+    <Reference Include="HP.LR.VuGen.ServiceCore">
+      <HintPath>..\..\lib\VuGen\HP.LR.VuGen.ServiceCore.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\lib\ICSharpCode.SharpDevelop.dll</HintPath>
+    <Reference Include="HP.LR.VuGen.VuGenProjectBinding">
+      <HintPath>..\..\lib\VuGen\HP.LR.VuGen.VuGenProjectBinding.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HP.Utt.ProjectSystem">
+      <HintPath>..\..\lib\VuGen\HP.Utt.ProjectSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core, Version=4.1.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\SharpDevelop\ICSharpCode.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core.WinForms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\SharpDevelop\ICSharpCode.Core.WinForms.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop, Version=4.1.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\SharpDevelop\ICSharpCode.SharpDevelop.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -62,8 +84,13 @@
   </ItemGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />
+    <Compile Include="GitCommitCommand.cs" />
+    <Compile Include="GitDiffCommand.cs" />
+    <Compile Include="GitStatus.cs" />
+    <Compile Include="GitStatusSet.cs" />
+    <Compile Include="LocalHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands.cs" />
+    <Compile Include="GitCommand.cs" />
     <Compile Include="Git.cs" />
     <Compile Include="GitGuiWrapper.cs" />
     <Compile Include="GitMessageView.cs" />

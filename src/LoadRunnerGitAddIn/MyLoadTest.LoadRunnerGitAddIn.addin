@@ -7,6 +7,7 @@
 
     <Manifest>
         <Identity name="ICSharpCode.GitAddIn" />
+        <Dependency addin="VuGenProjectBinding" version="12.02.0.0" />
     </Manifest>
 
     <Runtime>
@@ -27,8 +28,6 @@
 
     <Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem">
         <Condition name="IsUnderGitControl">
-            <MenuItem id="GitSeparator" type="Separator" />
-
             <MenuItem id="GitCommit"
                     label="Git ${res:AddIns.Subversion.Commit}..."
                     icon="Svn.Commit"
@@ -38,6 +37,8 @@
                     label="Git ${res:AddIns.Subversion.Diff}..."
                     icon="Svn.Diff"
                     class="MyLoadTest.LoadRunnerGitAddIn.GitDiffCommand" />
+
+            <MenuItem id="GitSeparator" type="Separator" />
         </Condition>
     </Path>
 
@@ -64,7 +65,7 @@
     <Path name="/Vugen/Framework/ProjectSystem/VuGenExtraFilesTreeNode">
         <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
     </Path>
-    
+
     <Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
         <Include id="SubversionInclude" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem" />
     </Path>

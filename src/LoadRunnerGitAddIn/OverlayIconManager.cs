@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using MyLoadTest.LoadRunnerGitAddIn.Properties;
@@ -18,20 +18,22 @@ namespace MyLoadTest.LoadRunnerGitAddIn
 {
     public static class OverlayIconManager
     {
-        private static readonly Queue<AbstractProjectBrowserTreeNode> queue = new Queue<AbstractProjectBrowserTreeNode>();
-        private static readonly HashSet<AbstractProjectBrowserTreeNode> inQueue = new HashSet<AbstractProjectBrowserTreeNode>();
-        private static bool threadRunning;
+        private static readonly Queue<AbstractProjectBrowserTreeNode> Queue = new Queue<AbstractProjectBrowserTreeNode>();
+        private static readonly HashSet<AbstractProjectBrowserTreeNode> InQueue = new HashSet<AbstractProjectBrowserTreeNode>();
+        private static readonly Image[] StatusIcons = new Image[10];
+        private static readonly Bitmap StatusImages = Resources.SvnStatusImages;
+        private static bool _threadRunning;
 
         public static void Enqueue(AbstractProjectBrowserTreeNode node)
         {
-            lock (queue)
+            lock (Queue)
             {
-                if (inQueue.Add(node))
+                if (InQueue.Add(node))
                 {
-                    queue.Enqueue(node);
-                    if (!threadRunning)
+                    Queue.Enqueue(node);
+                    if (!_threadRunning)
                     {
-                        threadRunning = true;
+                        _threadRunning = true;
                         ThreadPool.QueueUserWorkItem(Run);
                     }
                 }
@@ -40,13 +42,13 @@ namespace MyLoadTest.LoadRunnerGitAddIn
 
         public static void EnqueueRecursive(AbstractProjectBrowserTreeNode node)
         {
-            lock (queue)
+            lock (Queue)
             {
-                if (inQueue.Add(node))
-                    queue.Enqueue(node);
+                if (InQueue.Add(node))
+                    Queue.Enqueue(node);
 
                 // use breadth-first search
-                Queue<AbstractProjectBrowserTreeNode> q = new Queue<AbstractProjectBrowserTreeNode>();
+                var q = new Queue<AbstractProjectBrowserTreeNode>();
                 q.Enqueue(node);
                 while (q.Count > 0)
                 {
@@ -57,15 +59,15 @@ namespace MyLoadTest.LoadRunnerGitAddIn
                         if (node != null)
                         {
                             q.Enqueue(node);
-                            if (inQueue.Add(node))
-                                queue.Enqueue(node);
+                            if (InQueue.Add(node))
+                                Queue.Enqueue(node);
                         }
                     }
                 }
 
-                if (!threadRunning)
+                if (!_threadRunning)
                 {
-                    threadRunning = true;
+                    _threadRunning = true;
                     ThreadPool.QueueUserWorkItem(Run);
                 }
             }
@@ -73,18 +75,18 @@ namespace MyLoadTest.LoadRunnerGitAddIn
 
         public static void EnqueueParents(AbstractProjectBrowserTreeNode node)
         {
-            lock (queue)
+            lock (Queue)
             {
                 while (node != null)
                 {
-                    if (inQueue.Add(node))
-                        queue.Enqueue(node);
+                    if (InQueue.Add(node))
+                        Queue.Enqueue(node);
                     node = node.Parent as AbstractProjectBrowserTreeNode;
                 }
 
-                if (!threadRunning)
+                if (!_threadRunning)
                 {
-                    threadRunning = true;
+                    _threadRunning = true;
                     ThreadPool.QueueUserWorkItem(Run);
                 }
             }
@@ -105,18 +107,18 @@ namespace MyLoadTest.LoadRunnerGitAddIn
                     Thread.Sleep(100);
                 }
                 AbstractProjectBrowserTreeNode node;
-                lock (queue)
+                lock (Queue)
                 {
-                    if (queue.Count == 0)
+                    if (Queue.Count == 0)
                     {
                         LoggingService.Debug("Git: OverlayIconManager Thread finished");
-                        Debug.Assert(inQueue.Count == 0);
-                        inQueue.Clear();
-                        threadRunning = false;
+                        Debug.Assert(InQueue.Count == 0);
+                        InQueue.Clear();
+                        _threadRunning = false;
                         return;
                     }
-                    node = queue.Dequeue();
-                    inQueue.Remove(node);
+                    node = Queue.Dequeue();
+                    InQueue.Remove(node);
                 }
                 try
                 {
@@ -131,40 +133,16 @@ namespace MyLoadTest.LoadRunnerGitAddIn
 
         private static void RunStep(AbstractProjectBrowserTreeNode node)
         {
-            if (node.IsDisposed)
+            var status = node?.GetNodeStatus();
+            if (!status.HasValue)
+            {
                 return;
-
-            FileNode fileNode = node as FileNode;
-            GitStatus status;
-            if (fileNode != null)
-            {
-                status = GitStatusCache.GetFileStatus(fileNode.FileName);
-            }
-            else
-            {
-                DirectoryNode directoryNode = node as DirectoryNode;
-                if (directoryNode != null)
-                {
-                    status = GitStatusCache.GetFileStatus(directoryNode.Directory);
-                }
-                else
-                {
-                    SolutionNode solNode = node as SolutionNode;
-                    if (solNode != null)
-                    {
-                        status = GitStatusCache.GetFileStatus(solNode.Solution.Directory);
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
             }
 
             WorkbenchSingleton.SafeThreadAsyncCall(
-                delegate
+                () =>
                 {
-                    Image image = GetImage(status);
+                    var image = GetImage(status.Value);
                     if (image != null)
                     {
                         node.Overlay = image;
@@ -177,7 +155,7 @@ namespace MyLoadTest.LoadRunnerGitAddIn
                 });
         }
 
-        public static Image GetImage(GitStatus status)
+        private static Image GetImage(GitStatus status)
         {
             switch (status)
             {
@@ -198,23 +176,8 @@ namespace MyLoadTest.LoadRunnerGitAddIn
             }
         }
 
-        #region SVN icons
-
-        private static Bitmap statusImages;
-
-        public static Bitmap StatusImages
-        {
-            get
-            {
-                if (statusImages == null)
-                {
-                    statusImages = Resources.SvnStatusImages;
-                }
-
-                return statusImages;
-            }
-        }
-
+        [SuppressMessage("ReSharper", "UnusedMember.Local",
+            Justification = "Left as is from original SharpDevelop Git Add-in")]
         private enum StatusIcon
         {
             Empty = 0,
@@ -229,30 +192,26 @@ namespace MyLoadTest.LoadRunnerGitAddIn
             Modified
         }
 
-        private static Image[] statusIcons = new Image[10];
-
         private static Image GetImage(StatusIcon status)
         {
-            int index = (int)status;
-            if (statusIcons[index] == null)
+            var index = (int)status;
+            if (StatusIcons[index] == null)
             {
-                Bitmap statusImages = StatusImages;
-                Bitmap smallImage = new Bitmap(7, 10);
-                using (Graphics g = Graphics.FromImage(smallImage))
+                var statusImages = StatusImages;
+                var smallImage = new Bitmap(7, 10);
+                using (var g = Graphics.FromImage(smallImage))
                 {
                     //g.DrawImageUnscaled(statusImages, -index * 7, -3);
-                    Rectangle srcRect = new Rectangle(index * 7, 3, 7, 10);
-                    Rectangle destRect = new Rectangle(0, 0, 7, 10);
+                    var srcRect = new Rectangle(index * 7, 3, 7, 10);
+                    var destRect = new Rectangle(0, 0, 7, 10);
                     g.DrawImage(statusImages, destRect, srcRect, GraphicsUnit.Pixel);
 
                     //g.DrawLine(Pens.Black, 0, 0, 7, 10);
                 }
                 smallImage.Tag = typeof(OverlayIconManager);
-                statusIcons[index] = smallImage;
+                StatusIcons[index] = smallImage;
             }
-            return statusIcons[index];
+            return StatusIcons[index];
         }
-
-        #endregion
     }
 }

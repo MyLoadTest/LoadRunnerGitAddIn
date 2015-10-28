@@ -61,6 +61,34 @@ namespace MyLoadTest.LoadRunnerGitAddIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string CancelButtonText {
+            get {
+                return ResourceManager.GetString("CancelButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Files.
+        /// </summary>
+        internal static string SaveFilesButtonText {
+            get {
+                return ResourceManager.GetString("SaveFilesButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version control operation would affect files with unsaved modifications.
+        ///You have to save those files before running the operation..
+        /// </summary>
+        internal static string SaveUnsavedFilesConfirmationMessage {
+            get {
+                return ResourceManager.GetString("SaveUnsavedFilesConfirmationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap SvnStatusImages {

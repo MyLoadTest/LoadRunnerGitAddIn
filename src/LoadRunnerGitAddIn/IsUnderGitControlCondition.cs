@@ -8,26 +8,15 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace MyLoadTest.LoadRunnerGitAddIn
 {
-	/// <summary>
-	/// Description of IsUnderGitControlCondition.
-	/// </summary>
-	public class IsUnderGitControlCondition : IConditionEvaluator
-	{
-		public bool IsValid(object caller, Condition condition)
-		{
-			FileNode node = ProjectBrowserPad.Instance.SelectedNode as FileNode;
-			if (node != null) {
-				return Git.IsInWorkingCopy(node.FileName);
-			}
-			DirectoryNode dir = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
-			if (dir != null) {
-				return Git.IsInWorkingCopy(dir.Directory);
-			}
-			SolutionNode sol = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
-			if (sol != null) {
-				return Git.IsInWorkingCopy(sol.Solution.Directory);
-			}
-			return false;
-		}
-	}
+    /// <summary>
+    /// Description of IsUnderGitControlCondition.
+    /// </summary>
+    public class IsUnderGitControlCondition : IConditionEvaluator
+    {
+        public bool IsValid(object caller, Condition condition)
+        {
+            var path = ProjectBrowserPad.Instance?.SelectedNode?.GetNodeFileSystemPath();
+            return !string.IsNullOrEmpty(path) && Git.IsInWorkingCopy(path);
+        }
+    }
 }
